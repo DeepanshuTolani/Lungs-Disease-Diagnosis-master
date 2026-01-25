@@ -1,0 +1,404 @@
+<!-- <!DOCTYPE html>
+<html>
+<head>
+    <title>Lung Disease Detection</title>
+</head>
+<body>
+    <h2>Upload X-ray Image</h2>
+
+    <input type="file" id="fileInput">
+    <button onclick="upload()">Predict</button>
+
+    <p id="result"></p>
+
+    <script>
+        async function upload() {
+            const file = document.getElementById("fileInput").files[0];
+            const formData = new FormData();
+            formData.append("file", file);
+
+            const response = await fetch("/predict", {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await response.json();
+            document.getElementById("result").innerHTML =
+                `Prediction: ${data.prediction_label}<br>Confidence: ${data.confidence}%`;
+        }
+    </script>
+</body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PulmoScan AI | Advanced Diagnostics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg: #0b0f1a;
+            --surface: #161b2c;
+            --primary: #3b82f6;
+            --accent: #00f2fe;
+            --text: #f8fafc;
+            --text-dim: #94a3b8;
+            --success: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(0, 242, 254, 0.05) 0%, transparent 40%);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        /* Header Section */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-weight: 800;
+            font-size: 2.5rem;
+            letter-spacing: -1px;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        /* The Main Card */
+        .main-card {
+            background: var(--surface);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 28px;
+            padding: 30px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Upload Area */
+        .upload-box {
+            border: 2px dashed rgba(59, 130, 246, 0.3);
+            border-radius: 20px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            background: rgba(59, 130, 246, 0.02);
+        }
+
+        .upload-box:hover {
+            border-color: var(--primary);
+            background: rgba(59, 130, 246, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .upload-box i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        #fileInput {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* Preview Image */
+        #previewContainer {
+            display: none;
+            margin-top: 20px;
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        #previewImage {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 15px;
+        }
+
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--accent);
+            box-shadow: 0 0 15px var(--accent);
+            display: none;
+            animation: scanning 2s linear infinite;
+        }
+
+        /* Prediction Button */
+        .btn-predict {
+            width: 100%;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            color: #000;
+            border: none;
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-top: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-predict:hover {
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+            transform: scale(1.02);
+        }
+
+        .btn-predict:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Result Panel */
+        #resultArea {
+            display: none;
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 18px;
+            border-left: 4px solid var(--success);
+            animation: slideIn 0.4s ease-out;
+        }
+
+        .result-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+        }
+
+        .prediction-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin: 5px 0;
+            color: var(--success);
+        }
+
+        .confidence-container {
+            margin-top: 15px;
+        }
+
+        .progress-bg {
+            height: 6px;
+            background: #2d3748;
+            border-radius: 10px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--success);
+            width: 0%;
+            transition: width 1s ease-in-out;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; filter: blur(5px); transform: translateX(-10px); }
+            to { opacity: 1; filter: blur(0); transform: translateX(0); }
+        }
+
+        @keyframes scanning {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
+
+        .loader {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #000;
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            animation: rotation 1s linear infinite;
+        }
+
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header class="header">
+            <h1>PULMO<span style="color:var(--text); opacity:0.8">SCAN</span></h1>
+            <p><i class="fa-solid fa-microchip"></i> Neural Network Analysis System</p>
+        </header>
+
+        <main class="main-card">
+            <div class="upload-box" id="dropZone">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <p id="uploadText">Drop chest X-ray or click to upload</p>
+                <input type="file" id="fileInput" accept="image/*">
+            </div>
+
+            <div id="previewContainer">
+                <img id="previewImage" src="" alt="X-ray Preview">
+                <div class="scan-line" id="scanLine"></div>
+            </div>
+
+            <button class="btn-predict" id="predictBtn" onclick="upload()">
+                <div class="loader" id="loader"></div>
+                <span id="btnText"><i class="fa-solid fa-wand-magic-sparkles"></i> ANALYZE X-RAY</span>
+            </button>
+
+            <div id="resultArea">
+                <div class="result-label">Diagnostic Output</div>
+                <div class="prediction-value" id="predictionLabel">---</div>
+                
+                <div class="confidence-container">
+                    <div style="display:flex; justify-content:space-between; font-size: 0.8rem;">
+                        <span>AI Confidence</span>
+                        <span id="confidenceText">0%</span>
+                    </div>
+                    <div class="progress-bg">
+                        <div class="progress-fill" id="confidenceBar"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer style="text-align: center; margin-top: 20px; font-size: 0.7rem; color: var(--text-dim);">
+            Automated Deep Learning Diagnostic Tool • Resume Project 2026
+        </footer>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const previewImage = document.getElementById('previewImage');
+        const previewContainer = document.getElementById('previewContainer');
+        const scanLine = document.getElementById('scanLine');
+        const uploadText = document.getElementById('uploadText');
+
+        // Handle Image Preview
+        fileInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                    uploadText.innerText = file.name;
+                    document.getElementById('resultArea').style.display = 'none';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        async function upload() {
+            const file = fileInput.files[0];
+            if (!file) {
+                alert("Please select an image first!");
+                return;
+            }
+
+            // UI Feedback
+            const btn = document.getElementById('predictBtn');
+            const loader = document.getElementById('loader');
+            const btnText = document.getElementById('btnText');
+            
+            btn.disabled = true;
+            loader.style.display = 'block';
+            btnText.style.display = 'none';
+            scanLine.style.display = 'block';
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            try {
+                const response = await fetch("/predict", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                // Show Results
+                document.getElementById('resultArea').style.display = 'block';
+                document.getElementById('predictionLabel').innerText = data.prediction_label;
+                document.getElementById('confidenceText').innerText = data.confidence;
+                
+                // Color code result
+                const labelElement = document.getElementById('predictionLabel');
+                const barElement = document.getElementById('confidenceBar');
+                if(data.prediction_label.toLowerCase().includes('pneumonia')) {
+                    labelElement.style.color = "#ef4444";
+                    barElement.style.background = "#ef4444";
+                } else {
+                    labelElement.style.color = "#10b981";
+                    barElement.style.background = "#10b981";
+                }
+
+                // Animate progress bar (stripping '%' for width)
+                setTimeout(() => {
+                    barElement.style.width = data.confidence;
+                }, 100);
+
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Upload failed. Ensure server is running.");
+            } finally {
+                btn.disabled = false;
+                loader.style.display = 'none';
+                btnText.style.display = 'block';
+                scanLine.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
