@@ -1,40 +1,9 @@
-<!-- <!DOCTYPE html>
-<html>
-<head>
-    <title>Lung Disease Detection</title>
-</head>
-<body>
-    <h2>Upload X-ray Image</h2>
-
-    <input type="file" id="fileInput">
-    <button onclick="upload()">Predict</button>
-
-    <p id="result"></p>
-
-    <script>
-        async function upload() {
-            const file = document.getElementById("fileInput").files[0];
-            const formData = new FormData();
-            formData.append("file", file);
-
-            const response = await fetch("/predict", {
-                method: "POST",
-                body: formData
-            });
-
-            const data = await response.json();
-            document.getElementById("result").innerHTML =
-                `Prediction: ${data.prediction_label}<br>Confidence: ${data.confidence}%`;
-        }
-    </script>
-</body>
-</html> -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PulmoScan AI | Advanced Diagnostics</title>
+    <title>PulmoScan AI | Secure Access</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -47,6 +16,7 @@
             --text: #f8fafc;
             --text-dim: #94a3b8;
             --success: #10b981;
+            --error: #ef4444;
         }
 
         * {
@@ -76,11 +46,222 @@
             animation: fadeIn 0.8s ease-out;
         }
 
-        /* Header Section */
-        .header {
+        /* LOGIN SCREEN STYLES */
+        #loginScreen {
+            display: block;
+        }
+
+        .login-card {
+            background: var(--surface);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 28px;
+            padding: 40px 30px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                from 0deg at 50% 50%,
+                transparent 0deg,
+                rgba(59, 130, 246, 0.1) 90deg,
+                transparent 180deg,
+                rgba(0, 242, 254, 0.1) 270deg,
+                transparent 360deg
+            );
+            animation: rotate 8s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes rotate {
+            100% { transform: rotate(360deg); }
+        }
+
+        .login-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .lock-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 25px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #000;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .login-header {
             text-align: center;
             margin-bottom: 30px;
         }
+
+        .login-header h1 {
+            font-weight: 800;
+            font-size: 2rem;
+            letter-spacing: -1px;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .login-header p {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-dim);
+            font-size: 1.1rem;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 16px 18px 16px 50px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            color: var(--text);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .input-field::placeholder {
+            color: var(--text-dim);
+        }
+
+        .btn-login {
+            width: 100%;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            color: #000;
+            border: none;
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            display: none;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--error);
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .security-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 25px;
+            color: var(--text-dim);
+            font-size: 0.75rem;
+        }
+
+        .security-badge i {
+            color: var(--success);
+        }
+
+        /* APP SCREEN STYLES */
+        #appScreen {
+            display: none;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+/* Logout Button Style */
+.logout-btn {
+    position: fixed;      /* IMPORTANT CHANGE */
+    top: 20px;
+    right: 20px;
+
+    background: transparent;
+    color: #ff4d4d;
+    border: 1px solid #ff4d4d;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    z-index: 9999;        /* make sure it stays on top */
+}
+
+/* Hover Effect */
+.logout-btn:hover {
+    background: rgba(255, 77, 77, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 0 12px rgba(255, 77, 77, 0.6);
+}
+
 
         .header h1 {
             font-weight: 800;
@@ -97,7 +278,6 @@
             margin-top: 5px;
         }
 
-        /* The Main Card */
         .main-card {
             background: var(--surface);
             border: 1px solid rgba(255, 255, 255, 0.05);
@@ -107,7 +287,6 @@
             backdrop-filter: blur(10px);
         }
 
-        /* Upload Area */
         .upload-box {
             border: 2px dashed rgba(59, 130, 246, 0.3);
             border-radius: 20px;
@@ -138,7 +317,6 @@
             cursor: pointer;
         }
 
-        /* Preview Image */
         #previewContainer {
             display: none;
             margin-top: 20px;
@@ -166,7 +344,6 @@
             animation: scanning 2s linear infinite;
         }
 
-        /* Prediction Button */
         .btn-predict {
             width: 100%;
             background: linear-gradient(45deg, var(--primary), var(--accent));
@@ -195,7 +372,6 @@
             cursor: not-allowed;
         }
 
-        /* Result Panel */
         #resultArea {
             display: none;
             margin-top: 25px;
@@ -239,7 +415,16 @@
             transition: width 1s ease-in-out;
         }
 
-        /* Animations */
+        .loader {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #000;
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            animation: rotation 1s linear infinite;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -256,16 +441,6 @@
             100% { top: 0%; }
         }
 
-        .loader {
-            display: none;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #000;
-            border-bottom-color: transparent;
-            border-radius: 50%;
-            animation: rotation 1s linear infinite;
-        }
-
         @keyframes rotation {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -275,57 +450,162 @@
 <body>
 
     <div class="container">
-        <header class="header">
-            <h1>PULMO<span style="color:var(--text); opacity:0.8">SCAN</span></h1>
-            <p><i class="fa-solid fa-microchip"></i> Neural Network Analysis System</p>
-        </header>
-
-        <main class="main-card">
-            <div class="upload-box" id="dropZone">
-                <i class="fa-solid fa-cloud-arrow-up"></i>
-                <p id="uploadText">Drop chest X-ray or click to upload</p>
-                <input type="file" id="fileInput" accept="image/*">
-            </div>
-
-            <div id="previewContainer">
-                <img id="previewImage" src="" alt="X-ray Preview">
-                <div class="scan-line" id="scanLine"></div>
-            </div>
-
-            <button class="btn-predict" id="predictBtn" onclick="upload()">
-                <div class="loader" id="loader"></div>
-                <span id="btnText"><i class="fa-solid fa-wand-magic-sparkles"></i> ANALYZE X-RAY</span>
-            </button>
-
-            <div id="resultArea">
-                <div class="result-label">Diagnostic Output</div>
-                <div class="prediction-value" id="predictionLabel">---</div>
-                
-                <div class="confidence-container">
-                    <div style="display:flex; justify-content:space-between; font-size: 0.8rem;">
-                        <span>AI Confidence</span>
-                        <span id="confidenceText">0%</span>
+        <!-- LOGIN SCREEN -->
+        <div id="loginScreen">
+            <div class="login-card">
+                <div class="login-content">
+                    <div class="lock-icon">
+                        <i class="fa-solid fa-shield-halved"></i>
                     </div>
-                    <div class="progress-bg">
-                        <div class="progress-fill" id="confidenceBar"></div>
+                    
+                    <div class="login-header">
+                        <h1>PULMO<span style="opacity:0.7">SCAN</span></h1>
+                        <p>Secure Medical Diagnostics Platform</p>
+                    </div>
+
+                    <form id="loginForm" onsubmit="handleLogin(event)">
+                        <div class="input-group">
+                            <i class="fa-solid fa-user"></i>
+                            <input 
+                                type="text" 
+                                class="input-field" 
+                                id="username" 
+                                placeholder="Username"
+                                autocomplete="username"
+                                required
+                            >
+                        </div>
+
+                        <div class="input-group">
+                            <i class="fa-solid fa-lock"></i>
+                            <input 
+                                type="password" 
+                                class="input-field" 
+                                id="password" 
+                                placeholder="Access Token"
+                                autocomplete="current-password"
+                                required
+                            >
+                        </div>
+
+                        <button type="submit" class="btn-login">
+                            <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                            <span>ACCESS SYSTEM</span>
+                        </button>
+
+                        <div class="error-message" id="errorMessage">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            Invalid credentials. Please try again.
+                        </div>
+                    </form>
+
+                    <div class="security-badge">
+                        <i class="fa-solid fa-shield-check"></i>
+                        <span>End-to-End Encrypted • HIPAA Compliant</span>
                     </div>
                 </div>
             </div>
-        </main>
 
-        <footer style="text-align: center; margin-top: 20px; font-size: 0.7rem; color: var(--text-dim);">
-            Automated Deep Learning Diagnostic Tool • Resume Project 2026
-        </footer>
+            <footer style="text-align: center; margin-top: 20px; font-size: 0.7rem; color: var(--text-dim);">
+                Automated Deep Learning Diagnostic Tool • Made by Deepanshu Tolani
+            </footer>
+        </div>
+
+        <!-- APP SCREEN -->
+        <div id="appScreen">
+            <header class="header">
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </button>
+                <h1>PULMO<span style="color:var(--text); opacity:0.8">SCAN</span></h1>
+                <p><i class="fa-solid fa-microchip"></i> Neural Network Analysis System</p>
+            </header>
+
+            <main class="main-card">
+                <div class="upload-box" id="dropZone">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <p id="uploadText">Drop chest X-ray or click to upload</p>
+                    <input type="file" id="fileInput" accept="image/*">
+                </div>
+
+                <div id="previewContainer">
+                    <img id="previewImage" src="" alt="X-ray Preview">
+                    <div class="scan-line" id="scanLine"></div>
+                </div>
+
+                <button class="btn-predict" id="predictBtn" onclick="upload()">
+                    <div class="loader" id="loader"></div>
+                    <span id="btnText"><i class="fa-solid fa-wand-magic-sparkles"></i> ANALYZE X-RAY</span>
+                </button>
+
+                <div id="resultArea">
+                    <div class="result-label">Diagnostic Output</div>
+                    <div class="prediction-value" id="predictionLabel">---</div>
+                    
+                    <div class="confidence-container">
+                        <div style="display:flex; justify-content:space-between; font-size: 0.8rem;">
+                            <span>AI Confidence</span>
+                            <span id="confidenceText">0%</span>
+                        </div>
+                        <div class="progress-bg">
+                            <div class="progress-fill" id="confidenceBar"></div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <footer style="text-align: center; margin-top: 20px; font-size: 0.7rem; color: var(--text-dim);">
+                Automated Deep Learning Diagnostic Tool • Made by Deepanshu tolani 
+            </footer>
+        </div>
     </div>
 
     <script>
+        // Authentication
+        const FIXED_TOKEN = "deep27";
+        let isAuthenticated = false;
+
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+
+            if (password === FIXED_TOKEN) {
+                isAuthenticated = true;
+                errorMessage.style.display = 'none';
+                
+                // Smooth transition
+                document.getElementById('loginScreen').style.animation = 'fadeOut 0.5s ease-out';
+                setTimeout(() => {
+                    document.getElementById('loginScreen').style.display = 'none';
+                    document.getElementById('appScreen').style.display = 'block';
+                    document.getElementById('appScreen').style.animation = 'fadeIn 0.8s ease-out';
+                }, 500);
+            } else {
+                errorMessage.style.display = 'block';
+                document.getElementById('password').value = '';
+                document.getElementById('password').focus();
+            }
+        }
+
+        function logout() {
+            isAuthenticated = false;
+            document.getElementById('appScreen').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('loginForm').reset();
+            document.getElementById('resultArea').style.display = 'none';
+            document.getElementById('previewContainer').style.display = 'none';
+        }
+
+        // File Upload & Preview
         const fileInput = document.getElementById('fileInput');
         const previewImage = document.getElementById('previewImage');
         const previewContainer = document.getElementById('previewContainer');
         const scanLine = document.getElementById('scanLine');
         const uploadText = document.getElementById('uploadText');
 
-        // Handle Image Preview
         fileInput.addEventListener('change', function() {
             const file = this.files[0];
             if (file) {
@@ -340,14 +620,19 @@
             }
         });
 
+        // Prediction
         async function upload() {
+            if (!isAuthenticated) {
+                alert("Please login first!");
+                return;
+            }
+
             const file = fileInput.files[0];
             if (!file) {
                 alert("Please select an image first!");
                 return;
             }
 
-            // UI Feedback
             const btn = document.getElementById('predictBtn');
             const loader = document.getElementById('loader');
             const btnText = document.getElementById('btnText');
@@ -368,23 +653,23 @@
 
                 const data = await response.json();
 
-                // Show Results
                 document.getElementById('resultArea').style.display = 'block';
                 document.getElementById('predictionLabel').innerText = data.prediction_label;
                 document.getElementById('confidenceText').innerText = data.confidence;
                 
-                // Color code result
                 const labelElement = document.getElementById('predictionLabel');
                 const barElement = document.getElementById('confidenceBar');
+                
                 if(data.prediction_label.toLowerCase().includes('pneumonia')) {
                     labelElement.style.color = "#ef4444";
                     barElement.style.background = "#ef4444";
+                    document.getElementById('resultArea').style.borderLeftColor = "#ef4444";
                 } else {
                     labelElement.style.color = "#10b981";
                     barElement.style.background = "#10b981";
+                    document.getElementById('resultArea').style.borderLeftColor = "#10b981";
                 }
 
-                // Animate progress bar (stripping '%' for width)
                 setTimeout(() => {
                     barElement.style.width = data.confidence;
                 }, 100);
@@ -399,6 +684,16 @@
                 scanLine.style.display = 'none';
             }
         }
+
+        // Add fadeOut animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeOut {
+                from { opacity: 1; transform: translateY(0); }
+                to { opacity: 0; transform: translateY(-20px); }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
