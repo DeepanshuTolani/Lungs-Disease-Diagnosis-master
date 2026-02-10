@@ -1,15 +1,15 @@
-bentoml==1.0.10
-joblib==1.2.0
-pip-chill==1.0.1
-# torchvision==0.14.1
-torchvision
-tqdm==4.64.1
-wincertstore==0.2
+torch==1.13.1
+torchvision==0.14.1
 torchsummary==1.5.1
-matplotlib==3.10.3
-opencv-python==4.12.0.88
+numpy
 fastapi
 uvicorn
-
-
-
+python-multipart
+gunicorn
+opencv-python-headless
+matplotlib==3.10.3
+joblib==1.2.0
+tqdm==4.64.1
+bentoml==1.0.10
+pip-chill==1.0.1
+wincertstore==0.2
