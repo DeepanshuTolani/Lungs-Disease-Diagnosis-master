@@ -11,8 +11,5 @@ opencv-python==4.12.0.88
 fastapi
 uvicorn
 
-cd Lungs-Disease-Diagnosis-master
-env\Scripts\activate
-(env) C:\Users\Dell\Desktop\lung\Lungs-Disease-Diagnosis-master>
-uvicorn app:app --reload
+
 
